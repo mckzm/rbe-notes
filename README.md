@@ -627,8 +627,15 @@ The variants of `enum`s all have the same visibility as the `enum` itself.
 
 The section should mention [`non_exhaustive`.](https://doc.rust-lang.org/reference/attributes/type_system.html#the-non_exhaustive-attribute)
 
-You can't destructure or use [struct update syntax](https://doc.rust-lang.org/reference/expressions/struct-expr.html#functional-update-syntax)
-with types that have fields you can't name or foreign types that are `non_exhaustive`.
+You can't use [struct update syntax](https://doc.rust-lang.org/reference/expressions/struct-expr.html#functional-update-syntax) with types that have fields you can't name or foreign types that are `non_exhaustive`, and you can only destructure a foreign `non_exhaustive` struct using the `..` wildcard:
+
+```rust
+// with bar::Bar being a foreign `non_exhaustive` struct with a single field `x`
+let b = bar::Bar::new(5);
+//let bar::Bar { x } = b; // no wildcard: won't work
+let bar::Bar { x, ..  } = b;
+println!("{x}");
+```
 
 Hmm, do they cover SUS anywhere?  I don't think they do.  The general idea is that here:
 ```rust
